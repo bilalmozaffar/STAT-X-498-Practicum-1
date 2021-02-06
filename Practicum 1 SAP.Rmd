@@ -9,6 +9,10 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r Read Data}
+dat <- read.csv('Practicum 1 Data.csv')
+```
+
 
 
 
