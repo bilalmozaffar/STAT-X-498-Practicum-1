@@ -9,8 +9,28 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r Load Libraries}
+library(tidyr)
+```
+
 ```{r Read Data}
-dat <- read.csv('Practicum 1 Data.csv')
+dat <- read.csv('Practicum 1 Data.csv', header = TRUE)
+```
+
+```{r Clean Data}
+# get rid of rows that have Snumber value missing
+# dat <- dat[complete.cases(dat[ , 1]), ]
+
+# dat$lbs_gained <- replace_na(dat$lbs_gained, 0) --> might not want to include this b/c it makes certain NA Yes values turn into 0, which is inaccurate and might affect results
+
+hist(dat$lbs_gained)
+
+x <- length(dat$weightgain)
+
+for (i in 1:x) {
+  if (dat$weightgain == 'No')
+    dat$lbs_gained == 0
+}
 ```
 
 
