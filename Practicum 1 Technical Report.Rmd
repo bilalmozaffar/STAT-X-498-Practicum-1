@@ -9,6 +9,93 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r Load Libraries}
+library(tidyr)
+library(ggplot2)
+```
+
+```{r Read Data}
+dat <- read.csv('Practicum 1 Data.csv', header = TRUE)
+
+dat1 <- dat[, c("shift", "gender", "Age", "height", "weightgain", "lbs_gained", "pounds_gained", "bweight", "BMI", "Vig.ex.Time", "Mod.ex.time", "Walk.ex.Time", "Total_Met_Min")]
+```
+
+```{r Fill in missing falues of Total_Met_Min}
+i = 1
+for (obs in dat1$Total_Met_Min){
+  
+  if (obs == "" || is.na(obs)) {
+    dat1$Total_Met_Min[i] = (8 * as.numeric(dat1$Vig.ex.Time[i])) + (4 * as.numeric(dat1$Mod.ex.time[i])) + (3.3 * as.numeric(dat1$Walk.ex.Time[i]))
+  }
+  
+  if (is.na(dat1$Total_Met_Min[i]) || dat1$Total_Met_Min[i] == 0) { #keep values where Total_Met_Min=0?
+    dat1 = dat1[-i,]
+  } else {
+    i = i + 1
+  }
+  
+}
+```
+
+```{r Remove missing lbs_gained values}
+i = 1
+for (obs in dat1$lbs_gained) {
+  if (obs == "" || is.na(obs)) {
+    dat1 = dat1[-i,]
+  } else {
+    i = i + 1
+  }
+}
+```
+
+```{r Changed Total_Met_Min to continuous variable}
+dat1$Total_Met_Min = as.numeric(dat1$Total_Met_Min)
+```
+
+```{r Linear Model}
+lm = lm(lbs_gained ~ Total_Met_Min, data = dat1)
+
+summary(lm)
+```
+
+```{r First Scatterplot}
+ggplot(data = dat1, aes(x = Total_Met_Min, y = lbs_gained)) + geom_point() + geom_smooth()
+```
+
+```{r Remove lbs_gained values > 45}
+i = 1
+for (obs in dat1$lbs_gained) {
+  if (obs > 45) {
+    dat1 = dat1[-i,]
+  } else {
+    i = i + 1
+  }
+}
+```
+
+```{r Remove Total_Met_Min values > 5000}
+i = 1
+for (obs in dat1$Total_Met_Min) {
+  if (obs >= 5000) {
+    dat1 = dat1[-i,]
+  } else {
+    i = i + 1
+  }
+}
+```
+
+```{r Linear Model without outliers}
+lm = lm(lbs_gained ~ Total_Met_Min, data = dat1)
+
+summary(lm)
+```
+P-value got bigger
+
+```{r Second Scatterplot}
+ggplot(data = dat1, aes(x = Total_Met_Min, y = lbs_gained)) + geom_point() + geom_smooth()
+```
+
+
 
 
 
