@@ -99,6 +99,8 @@ P-value got bigger
 ggplot(data = dat1, aes(x = Total_Met_Min, y = lbs_gained)) + geom_point() + geom_smooth()
 ```
 
+
+### Risheng: replace lbs_gained value with 0 if weightgain = 0 and drop the rows that both weightgain and lbs_gained are missing. Also calculate the beginning weight by subtracting lbs_gain from body weight. Calculate the change in BMI using begeinning weight and height.
 ```{r}
 dat1$lbs_gained[dat1$weightgain == "No"] <- 0
 
