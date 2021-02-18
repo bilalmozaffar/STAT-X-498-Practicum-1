@@ -140,7 +140,7 @@ summary(mod1)
 summary(mod0)
 
 anova(mod0, mod1, test = "Chi")
-##do not reject the null hypothesis that the reduced model is better(the full is more desirable), therefore we shouldn't include shift in the model
+##do not reject the null hypothesis that the reduced model is better(the model includes shift is less desirable), therefore we shouldn't include shift in the model
 ```
 
 ```{r}
