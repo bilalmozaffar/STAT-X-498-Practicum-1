@@ -124,7 +124,7 @@ dat1$gender <- factor(dat1$gender)
 dat1$shift <- factor(dat1$shift)
 
 
-mod1 <- glm(weightgain.b ~ shift + gender + Age + height + Total_Met_Min, family = binomial,na.omit(dat1))
+mod1 <- glm(weightgain.b ~ shift + gender + Age + height + Beg_BMI + Total_Met_Min, family = binomial,na.omit(dat1))
 
 ##qq plot
 qqnorm(residuals(mod1))
@@ -134,7 +134,7 @@ library(faraway)
 halfnorm(residuals(mod1))
 
 ## test if shift should be removed from the model
-mod0 <- glm(weightgain.b ~ gender + Age + height + Total_Met_Min, family = binomial,na.omit(dat1))
+mod0 <- glm(weightgain.b ~ gender + Age + height + Beg_BMI + Total_Met_Min, family = binomial,na.omit(dat1))
 
 summary(mod1)
 summary(mod0)
@@ -152,8 +152,9 @@ m.sw1 = step(mod00,
             direction = "both", trace = F)
 
 m.sw1$anova
+m.sw1
 
-## The selected model with the lowest AIC contains only two variables: gender and Total_Met_Min, therefore the Total_Met_Min does have an effect on weight gain, and shift does not have a significant effect on weight gain
+## The selected model with the lowest AIC contains only three variables: gender, BMI and Total_Met_Min, therefore the Total_Met_Min does have an effect on weight gain, and shift does not have a significant effect on weight gain
 
 ```
 
