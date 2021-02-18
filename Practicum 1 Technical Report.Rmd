@@ -117,30 +117,30 @@ dat1 <- dat1 %>%
 ```{r}
 dat1$weightgain.b <- ifelse(dat1$weightgain == 'Yes', 1, 0)
 
-head(dat1)
+dat1
 head(dat)
 
 dat1$gender <- factor(dat1$gender)
 dat1$shift <- factor(dat1$shift)
 
 
-mod1 <- glm(weightgain.b ~ shift + gender + Age + height + Vig.ex.Time + Mod.ex.time + Walk.ex.Time + Total_Met_Min, family = binomial,na.omit(dat1))
+mod1 <- glm(weightgain.b ~ shift + gender + Age + height + Total_Met_Min, family = binomial,na.omit(dat1))
 
 ##qq plot
 qqnorm(residuals(mod1))
 
 ##Outliers: no obvious outliers
+library(faraway)
 halfnorm(residuals(mod1))
 
 ## test if shift should be removed from the model
-mod0 <- glm(weightgain.b ~ gender + Age + height + Vig.ex.Time + Mod.ex.time + Walk.ex.Time + Total_Met_Min, family = binomial,na.omit(dat1))
+mod0 <- glm(weightgain.b ~ gender + Age + height + Total_Met_Min, family = binomial,na.omit(dat1))
 
 summary(mod1)
 summary(mod0)
 
 anova(mod0, mod1, test = "Chi")
-
-##do not reject the null hypothesis that the reduced model is better, therefore should include shift in the model
+##do not reject the null hypothesis that the reduced model is better(the full is more desirable), therefore we shouldn't include shift in the model
 ```
 
 ```{r}
