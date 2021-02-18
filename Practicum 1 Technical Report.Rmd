@@ -104,13 +104,13 @@ ggplot(data = dat1, aes(x = Total_Met_Min, y = lbs_gained)) + geom_point() + geo
 ```{r}
 dat1$lbs_gained[dat1$weightgain == "No"] <- 0
 
-dat1 %>% 
-  filter_at(vars(weightgain, lbs_gained), any_vars(complete.cases(.)))
-
 dat1$beg_weight <- dat1$bweight - dat1$lbs_gained
 
 dat1$Beg_BMI <- (dat1$beg_weight/(dat1$height^2))*703
 dat1$BMIChange <- dat1$BMI - dat1$Beg_BMI
+
+dat1 <- dat1 %>%
+  filter_at(vars(weightgain, lbs_gained), any_vars(complete.cases(.)))
 
 ```
 
