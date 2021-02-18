@@ -52,7 +52,7 @@ for (obs in dat1$lbs_gained) {
 }
 ```
 
-```{r Changed Total_Met_Min to continuous variable}
+```{r Changed Total_Met_Min to continuous variable} ### Already a numeric variable? No need to change
 dat1$Total_Met_Min = as.numeric(dat1$Total_Met_Min)
 ```
 
