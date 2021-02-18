@@ -21,7 +21,7 @@ names(dat)[names(dat) == "Vig ex Time"] <- "Vig.ex.Time"
 names(dat)[names(dat) == "Mod ex time"] <- "Mod.ex.time"
 names(dat)[names(dat) == "Walk ex Time"] <- "Walk.ex.Time"
 
-dat1 <- dat[, c("shift", "gender", "Age", "height", "weightgain", "lbs_gained", "pounds_gained", "bweight", "BMI", "Vig.ex.Time", "Mod.ex.time", "Walk.ex.Time", "Total_Met_Min")]
+dat1 <- dat[, c("shift", "gender", "Age", "height", "weightgain", "lbs_gained", "bweight", "BMI", "Vig.ex.Time", "Mod.ex.time", "Walk.ex.Time", "Total_Met_Min")]
 ```
 
 ```{r Fill in missing falues of Total_Met_Min}
