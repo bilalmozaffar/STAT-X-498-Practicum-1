@@ -99,7 +99,61 @@ P-value got bigger
 ggplot(data = dat1, aes(x = Total_Met_Min, y = lbs_gained)) + geom_point() + geom_smooth()
 ```
 
+```{r}
+dat1$lbs_gained[dat1$weightgain == "No"] <- 0
 
+dat1 %>% 
+  filter_at(vars(weightgain, lbs_gained), any_vars(complete.cases(.)))
+
+dat1$beg_weight <- dat1$bweight - dat1$lbs_gained
+
+dat1$Beg_BMI <- (dat1$beg_weight/(dat1$height^2))*703
+dat1$BMIChange <- dat1$BMI - dat1$Beg_BMI
+
+```
+
+```{r}
+dat1$weightgain.b <- ifelse(dat1$weightgain == 'Yes', 1, 0)
+
+head(dat1)
+head(dat)
+
+dat1$gender <- factor(dat1$gender)
+dat1$shift <- factor(dat1$shift)
+
+
+mod1 <- glm(weightgain.b ~ shift + gender + Age + height + Vig.ex.Time + Mod.ex.time + Walk.ex.Time + Total_Met_Min, family = binomial,na.omit(dat1))
+
+##qq plot
+qqnorm(residuals(mod1))
+
+##Outliers: no obvious outliers
+halfnorm(residuals(mod1))
+
+## test if shift should be removed from the model
+mod0 <- glm(weightgain.b ~ gender + Age + height + Vig.ex.Time + Mod.ex.time + Walk.ex.Time + Total_Met_Min, family = binomial,na.omit(dat1))
+
+summary(mod1)
+summary(mod0)
+
+anova(mod0, mod1, test = "Chi")
+
+##do not reject the null hypothesis that the reduced model is better, therefore should include shift in the model
+```
+
+```{r}
+## Using stepwise to select the best model
+mod00 <- glm(weightgain.b ~ 1, family = binomial,na.omit(dat1))
+
+m.sw1 = step(mod00,
+            scope=list(lower=mod00, upper=mod1),
+            direction = "both", trace = F)
+
+m.sw1$anova
+
+## The selected model with the lowest AIC contains only two variables: gender and Total_Met_Min, therefore the Total_Met_Min does have an effect on weight gain, and shift does not have a significant effect on weight gain
+
+```
 
 
 
