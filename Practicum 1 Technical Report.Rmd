@@ -78,9 +78,9 @@ pairs(dat1)
 ```
 
 ```{r}
+dat1.try <- dat1[c(3:4, 7:12)]
 dat1.try <- melt(dat1.try)
 ggplot(data = dat1.try, aes(x = value)) + stat_density() + facet_wrap(~variable, scales = 'free')
-
 ```
 
 We see that Age and BMI are right-skewed with nonzero values, so we will do a log transformation on these variables.
