@@ -1,5 +1,5 @@
 ---
-title: "Practicum 1 Technical Report"
+title: "The Relationship Between Exercise Time and Weight Loss"
 author: "Bilal Mozaffar, Risheng Li, Thomas Janes"
 date: "2/6/2021"
 output: pdf_document
@@ -14,7 +14,7 @@ library(tidyr)
 library(ggplot2)
 ```
 
-```{r Read Data}
+```{r Read Data, include = FALSE}
 dat <- read.csv('Practicum 1 Data.csv', header = TRUE)
 
 names(dat)[names(dat) == "Vig ex Time"] <- "Vig.ex.Time"
@@ -24,7 +24,7 @@ names(dat)[names(dat) == "Walk ex Time"] <- "Walk.ex.Time"
 dat1 <- dat[, c("shift", "gender", "Age", "height", "weightgain", "lbs_gained", "bweight", "BMI", "Vig.ex.Time", "Mod.ex.time", "Walk.ex.Time", "Total_Met_Min")]
 ```
 
-```{r Fill in missing falues of Total_Met_Min}
+```{r Fill in missing falues of Total_Met_Min, include = FALSE}
 i = 1
 for (obs in dat1$Total_Met_Min){
   
@@ -41,7 +41,7 @@ for (obs in dat1$Total_Met_Min){
 }
 ```
 
-```{r Remove missing lbs_gained values}
+```{r Remove missing lbs_gained values, include = FALSE}
 i = 1
 for (obs in dat1$lbs_gained) {
   if (obs == "" || is.na(obs)) {
@@ -52,7 +52,8 @@ for (obs in dat1$lbs_gained) {
 }
 ```
 
-```{r Changed Total_Met_Min to continuous variable} ### Already a numeric variable? No need to change
+```{r Changed Total_Met_Min to continuous variable} 
+### Already a numeric variable? No need to change
 dat1$Total_Met_Min = as.numeric(dat1$Total_Met_Min)
 ```
 
@@ -158,9 +159,27 @@ m.sw1
 
 ```
 
+## Abstract
+
+The purpose of this data analysis is to apply statistical models to health data for a call center. While there were many data points missing for weight gain and the total metabolic minutes, many of these could be found using the other metrics available. The health data was processed to provide as many viable data points as possible without compromising the integrity of the analysis. Two models were constructed: a linear model to examine the relationship between total metabolic minutes and weight gain and a logistic regression model to examine the relationship between shift time and weight gain.
+
+## Introduction
+
+We have been given several health measurements of employees working at a call center. Over eight months, the metrics have tracked information including work shift time, exercise time, weight gained (binary yes/no measurement), amount of weight gained, total metabolic minutes, and more. We hope to figure out whether certain factors, specifically total metabolic minutes and shift time, play a role in employees' weight gain.
+
+## The Data
+
+The data used in this analysis was provided by the call center. The data consists of 392 observations and 83 features, with variables such as member information, body measurements, exercise time, and weight situation. There are thirteen variables that we will use for this analysis, including shift time, gender, age, height, weight gain, pounds gained, body weight, body mass index, vigorous exercise time, moderate exercise time, walking exercise time, and total metabolic minutes. It is important to note that there were many missing values for total metabolic minutes, but these could be filled in using the other variables available. There were also missing values for pounds gained, but no features were available to account for this so these observations were removed. 
+
+# Examining Missing Data
 
 
+## The Relationship Between Total Metabolic Minutes and Weight Gain
 
 
+## The Relationship Between Shift Time and Weight Gain
+
+
+## Conclusion
 
 
