@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-```{r Load Libraries}
+```{r Load Libraries, include = FALSE}
 library(tidyr)
 library(ggplot2)
 library(dplyr)
@@ -30,11 +30,9 @@ Our goal is to detect whether factors, paritcularly total metabolic minutes and 
 
 ## The Data
 
-The data used in this analysis was provided by the call center. The data consists of 392 observations and 83 features, with variables such as member information, body measurements, exercise time, and weight situation. There are thirteen variables that we will use for this analysis, including shift time, gender, age, height, weight gain, pounds gained, body weight, body mass index, vigorous exercise time, moderate exercise time, walking exercise time, and total metabolic minutes. It is important to note that there were many missing values for total metabolic minutes, but these could be filled in using the other variables available. There were also missing values for pounds gained, but no features were available to account for this so these observations were removed.
-
-We load and subset the raw data into a new dataset that contains the columns that we will use for our analysis. After the initial examination of the data, we renamed several variables by eliminating white spaces in order to improve the easiness of analysis. Using the formula provided, Total_met_min = 8 * Vig_ex_time + 4 * Mod_ex_time + 3.3 * Walk_ex_time, we filled in the missing values of variable Total_Met_Min. 
-
 ```{r Read Data, include = FALSE}
+# Read data and rename certain variables
+
 dat <- read.csv('Practicum 1 Data.csv', header = TRUE)
 
 names(dat)[names(dat) == "Vig ex Time"] <- "Vig.ex.Time"
@@ -44,7 +42,9 @@ names(dat)[names(dat) == "Walk ex Time"] <- "Walk.ex.Time"
 dat1 <- dat[, c("shift", "gender", "Age", "height", "weightgain", "lbs_gained", "bweight", "BMI", "Vig.ex.Time", "Mod.ex.time", "Walk.ex.Time", "Total_Met_Min")]
 ```
 
-```{r Fill in missing falues of Total_Met_Min, include = FALSE}
+```{r Fill in missing values of Total_Met_Min, include = FALSE}
+# Use formula to calculate certain missing values of total metabolic minutes
+
 i = 1
 for (obs in dat1$Total_Met_Min){
   
@@ -52,6 +52,7 @@ for (obs in dat1$Total_Met_Min){
     dat1$Total_Met_Min[i] = (8 * as.numeric(dat1$Vig.ex.Time[i])) + (4 * as.numeric(dat1$Mod.ex.time[i])) + (3.3 * as.numeric(dat1$Walk.ex.Time[i]))
   }
   
+  # Get rid of observations with missing or 0 values of total metabolic minutes
   if (is.na(dat1$Total_Met_Min[i]) || dat1$Total_Met_Min[i] == 0) { #keep values where Total_Met_Min=0?
     dat1 = dat1[-i,]
   } else {
@@ -61,24 +62,37 @@ for (obs in dat1$Total_Met_Min){
 }
 ```
 
-```{r Changed Total_Met_Min to continuous variable} 
+```{r Changed Total_Met_Min to continuous variable}
 dat1$Total_Met_Min = as.numeric(dat1$Total_Met_Min)
 ```
 
-# replace lbs_gained value with 0 if weightgain = 0 and drop the rows that both weightgain and lbs_gained are missing. Also calculate the beginning weight by subtracting lbs_gain from body weight. Calculate the change in BMI using begeinning weight and height.
 ```{r}
+# Replace numerical lbs_gained variable with 0 if corresponding binary weightgain variable is "No"
 dat2 <- dat1
 dat2$lbs_gained[dat2$weightgain == "No"] <- 0
 
+# Calculate beginning weight by subracting lbs_gained from body weight
 dat2$beg_weight <- dat2$bweight - dat2$lbs_gained
 
+# Calculate change in BMI using beginning weight and height
 dat2$Beg_BMI <- (dat2$beg_weight/(dat2$height^2))*703
 dat2$BMIChange <- dat2$BMI - dat2$Beg_BMI
 
 dat2 <- dat2 %>%
   filter_at(vars(weightgain, lbs_gained), any_vars(complete.cases(.)))
-
 ```
+
+The data used in this analysis were provided by the call center. The data consist of 392 observations and 83 variables, including 12 variables of interest. We remove 40 empty observations. Total metabolic minutes is a critical variable in this analysis, and some observations are missing this variable value. However, we calculate and replace many of these missing values using the following equation:
+
+$Total\:Metabolic\:Minutes\:=\:8\:*Vigorous\:Exercise\:Time\:+\:4\:*\:Moderate\:Exercise\:Time\:+\:3.3\:*\:Walking\:Exercise\:Time$
+
+For the numerical pounds gained variable, there are many N/A values. For observations that have a binary weight gain value of "No," we change the numerical pounds gained value to 0 to indicate that this observation did not gain weight. Because the numerical pounds gained variable cannot be calculated using a transformation of other variables, we remove certain observations that have missing pounds gained and weight gain variables.
+
+We calculate and input values for beginning weight by subracting pounds gained from body weight. We also calculate change in BMI using a transformation of beginning weight and height.
+
+## Exploratory Data Analysis
+
+
 
 By turning weightgain into a dummy variable and running a logistic regression, we can measure if other variables have influence on weightgain. First, we factored the two categorical variables and built a model with variables include shift, gender, Age, height and Beg_BMI and Total_Met_Min. Because the change in BMI is very minimal, we decided to use the beginning BMI as one of the regressors. The half normal plot shows that there is no obvious outliers in the model.
 
