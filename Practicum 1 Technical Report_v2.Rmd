@@ -14,6 +14,7 @@ library(tidyr)
 library(ggplot2)
 library(dplyr)
 library(reshape2)
+library(faraway)
 ```
 
 ## Abstract
@@ -82,6 +83,18 @@ dat2 <- dat2 %>%
   filter_at(vars(weightgain, lbs_gained), any_vars(complete.cases(.)))
 ```
 
+```{r Remove missing lbs_gained values, include = FALSE}
+# Remove remaining observations with missing lbs_gained values
+i = 1
+for (obs in dat1$lbs_gained) {
+  if (obs == "" || is.na(obs)) {
+    dat1 = dat1[-i,]
+  } else {
+    i = i + 1
+  }
+}
+```
+
 The data used in this analysis were provided by the call center. The data consist of 392 observations and 83 variables, including 12 variables of interest. We remove 40 empty observations. Total metabolic minutes is a critical variable in this analysis, and some observations are missing this variable value. However, we calculate and replace many of these missing values using the following equation:
 
 $Total\:Metabolic\:Minutes\:=\:8\:*Vigorous\:Exercise\:Time\:+\:4\:*\:Moderate\:Exercise\:Time\:+\:3.3\:*\:Walking\:Exercise\:Time$
@@ -91,6 +104,24 @@ For the numerical pounds gained variable, there are many N/A values. For observa
 We calculate and input values for beginning weight by subracting pounds gained from body weight. We also calculate change in BMI using a transformation of beginning weight and height.
 
 ## Exploratory Data Analysis
+
+```{r Pairs Plots}
+pairs(dat1)
+```
+
+```{r}
+dat1.try <- dat1[c(3:4, 7:12)]
+dat1.try <- melt(dat1.try)
+ggplot(data = dat1.try, aes(x = value)) + stat_density() + facet_wrap(~variable, scales = 'free')
+```
+
+We see that Age and BMI are right-skewed with nonzero values, so we will do a log transformation on these variables.
+
+```{r}
+dat1$Age <- log(dat1$Age)
+dat1$BMI <- log(dat1$BMI)
+```
+
 
 
 
@@ -106,7 +137,6 @@ dat2$shift <- factor(dat2$shift)
 mod1 <- glm(weightgain.b ~ shift + gender + Age + height + Beg_BMI + Total_Met_Min, family = binomial,na.omit(dat2))
 
 ##Outliers: no obvious outliers
-library(faraway)
 halfnorm(residuals(mod1))
 ```
 
@@ -139,34 +169,6 @@ m.sw1
 ## The selected model with the lowest AIC contains only three variables: gender, BMI and Total_Met_Min, therefore the Total_Met_Min does have an effect on weight gain, and shift does not have a significant effect on weight gain
 ```
 
-```{r Remove missing lbs_gained values, include = FALSE}
-i = 1
-for (obs in dat1$lbs_gained) {
-  if (obs == "" || is.na(obs)) {
-    dat1 = dat1[-i,]
-  } else {
-    i = i + 1
-  }
-}
-```
-
-
-```{r Pairs Plots}
-pairs(dat1)
-```
-
-```{r}
-dat1.try <- dat1[c(3:4, 7:12)]
-dat1.try <- melt(dat1.try)
-ggplot(data = dat1.try, aes(x = value)) + stat_density() + facet_wrap(~variable, scales = 'free')
-```
-
-We see that Age and BMI are right-skewed with nonzero values, so we will do a log transformation on these variables.
-
-```{r}
-dat1$Age <- log(dat1$Age)
-dat1$BMI <- log(dat1$BMI)
-```
 
 ```{r Linear Model}
 lm = lm(lbs_gained ~ Total_Met_Min, data = dat1)
