@@ -18,11 +18,15 @@ library(reshape2)
 
 ## Abstract
 
-The purpose of this data analysis is to apply statistical models to health data for a call center. While there were many data points missing for weight gain and the total metabolic minutes, many of these could be found using the other metrics available. The health data was processed to provide as many viable data points as possible without compromising the integrity of the analysis. Two models were constructed: a linear model to examine the relationship between total metabolic minutes and weight gain and a logistic regression model to examine the relationship between shift time and weight gain.
+The purpose of this data analysis is to determine whether and how total metabolic minutes and employee shift time affect weight gain. The data are from a survey administered to call center employees from a start time for call center workers. The survey covers a time period of eight months. We will apply different methods to limit the effect of missing data and to create statistical models to determine the effects of certain variables. We will create *insert models here, describing response variable for each* 
+
+*While there were many data points missing for weight gain and the total metabolic minutes, many of these could be found using the other metrics available. The health data was processed to provide as many viable data points as possible without compromising the integrity of the analysis. Two models were constructed: a linear model to examine the relationship between total metabolic minutes and weight gain and a logistic regression model to examine the relationship between shift time and weight gain.*
 
 ## Introduction
 
-We have been given several health measurements of employees working at a call center. Over eight months, the metrics have tracked information including work shift time, exercise time, weight gained (binary yes/no measurement), amount of weight gained, total metabolic minutes, and more. We hope to figure out whether certain factors, specifically total metabolic minutes and shift time, play a role in employees' weight gain.
+In the age of computing, more people continue to find jobs that require them to sit all day. Physical activity at the workplace is not as common as it once was, which can potentially lead to unwanted health consequences. It is important to deduce which factors related to the workplace may have a role in influencing health metrics such as weight gain. Doing so may help prevent health issues in the long-run.
+
+Our goal is to detect whether factors, paritcularly total metabolic minutes and shift time, affect weight gain for employees of a call center. We will create *descriptive statistics and plots* to visualize these relationships in order to generate models that could answer these questions. The models will be *insert models and response variables*. This report details our analytical decisions and insights.
 
 ## The Data
 
@@ -203,5 +207,7 @@ Using various methods of analysis, we found that total metabolic minutes is a si
 It does not appear that shift has significant impact on weight gain. From the Chi-square test, we found that the model without shift performs better than the model with shift. As mentioned, we failed to reject the null hypothesis that the reduced model is better, so we do not find it beneficial to include shift in our final model to predict weight gain.
 
 ## Conclusion
+
+ascertain
 
 Our initial goal was to see whether shift and total metabolic minutes have an impact on weight gain. Multiple forms of analysis indicate that shift is not a relevant factor in determining weight gain, while total metabolic minutes is. Total metabolic minutes has a slightly adverse relationship to weight gain. We conducted further analysis to go beyond the requested covariate relationships. For a final model selection, gender, Beg_BMI, and Total_Met_Min appear to be the most signficant and useful predictors of weight gain.
