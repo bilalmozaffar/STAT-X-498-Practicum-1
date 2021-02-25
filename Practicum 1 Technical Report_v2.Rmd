@@ -99,7 +99,9 @@ $Total\:Metabolic\:Minutes\:=\:8\:*Vigorous\:Exercise\:Time\:+\:4\:*\:Moderate\:
 
 For the numerical pounds gained variable, there are many N/A values. For observations that have a binary weight gain value of "No," we change the numerical pounds gained value to 0 to indicate that this observation did not gain weight. Because the numerical pounds gained variable cannot be calculated using a transformation of other variables, we remove certain observations that have missing pounds gained and weight gain variables.
 
-We calculate and input values for beginning weight by subracting pounds gained from body weight. We also calculate change in BMI using a transformation of beginning weight and height.
+We calculate and input values for beginning weight by subracting pounds gained from body weight. We also calculate beginning BMI using a transformation of beginning weight and height:
+
+$Beginning\:BMI\:=\:730\:*(Beginning\:Weight\:/\:(\:Height\:^2))$
 
 ## Exploratory Data Analysis
 
@@ -164,30 +166,30 @@ for (obs in dat2$shift) {
 }
 ```
 
-To analyze potential effects of shift and total metabolic minutes simulataneously, we look at a scatterplot with total metabolic minutes as the independent variable and pounds gained as the response variable, with observations colored by shift category.
+To analyze potential effects of shift and total metabolic minutes simultaneously, we look at a scatterplot with total metabolic minutes as the independent variable and pounds gained as the response variable, with observations colored by shift category.
 
-```{r}
+```{r, warning = FALSE}
 ggplot(dat2, aes(x = Total_Met_Min, y = lbs_gained, color = shift.categ)) +
   geom_point()
 ```
 
-The response variable, pounds appears to be evenly scattered among all values of the independent variable, total metabolic minutes. This, like the earlier pairs plots, suggests that total metabolic minutes may not strongly influence pounds gained. Moreover, the different colors on the plot do not seem to follow any particular pattern or trend, suggesting, like the earlier pairs plots, that shift may not be very relevant in predicting pounds gained.
+The response variable, pounds appears to be evenly scattered among all values of the independent variable, total metabolic minutes. This, like the earlier pairs plots, suggests that total metabolic minutes may not strongly influence pounds gained. Moreover, the different colors on the plot do not seem to follow any particular pattern or trend, suggesting, like the earlier pairs plots, that shift may not be very relevant in predicting pounds gained either.
 
 
 ## Modeling
 
-By turning weightgain into a dummy variable and running a logistic regression, we can measure if other variables have influence on weightgain. First, we factored the two categorical variables and built a model with variables include shift, gender, Age, height and Beg_BMI and Total_Met_Min. Because the change in BMI is very minimal, we decided to use the beginning BMI as one of the regressors. The half normal plot shows that there is no obvious outliers in the model.
+By turning weight gain into a dummy variable and running a logistic regression, we can measure if other variables have influence on weightgain. First, we factored the two categorical variables and built a model with variables include shift, gender, Age, height and Beg_BMI and Total_Met_Min. Because the change in BMI is very minimal, we decided to use the beginning BMI as one of the regressors. The half normal plot shows that there is no obvious outliers in the model.
 
 *When weight gain is used as a binary variable, taking on the values yes or no, we can use logistic regression to measure the effect of our explanatory variables on whether an observation did or did not gain weight. For this logistic regression model, shift time, gender, age, height, beginning BMI, and total metabolic minutes are the explanatory variables.*
 
-```{r,include = FALSE}
+```{r}
 dat2$weightgain.b <- ifelse(dat2$weightgain == 'Yes', 1, 0)
 
 dat2$gender <- factor(dat2$gender)
 dat2$shift <- factor(dat2$shift)
 
 
-mod1 <- glm(weightgain.b ~ shift + gender + Age + height + Beg_BMI + Total_Met_Min, family = binomial,na.omit(dat2))
+mod1 <- glm(weightgain.b ~ shift.categ + gender + Age + height + Beg_BMI + Total_Met_Min, family = binomial,na.omit(dat2))
 
 ##Outliers: no obvious outliers
 halfnorm(residuals(mod1))
@@ -195,14 +197,20 @@ halfnorm(residuals(mod1))
 
 Solely from the model, we can see that only three variables have significant impact on the predictor: gender, Beg_BMI and Total_Met_Min. We perform a Chi-sqaure test to test if the model contains shift is better than the model without shifts. The null hypothesis is that the model without shift is a better model, and the alternative hypothesis is that the model without shift is not a better model. In order to compare two models, we omit the NA values in the dataset to make sure the number of cases used in each model is the same. The test statistic is is very large given a 95% confidence interval, therefore we fail to reject the null hypothesis that the reduced model is better, which means that the model contains shift is less favorable than the reduced model. 
 
-```{r, include = FALSE}
+```{r}
 mod0 <- glm(weightgain.b ~ gender + Age + height + Beg_BMI + Total_Met_Min, family = binomial,na.omit(dat2))
 
-summary(mod1)
-summary(mod0)
+#summary(mod1)
+#summary(mod0)
+
+tab = matrix(c(-.6210, 0.2796, -.3274, 0.5895, -1.087, 0.824, 1.610, 0.2903, .7895, 0.6010, -.06695, 0.0205, -.0001480, 0.0890), ncol = 2, byrow = TRUE)
+colnames(tab) <- c("Coefficient Estimate", "P-value")
+rownames(tab) <- c("Shift time: Early Morning", "Shift time: Late morning", "Shift time: Afternoon", "Gender: Female", "Gender: Male","Beginning BMI", "Total Metabolic Minutes")
+tab <- as.table(round(tab, 4))
+tab
 ```
 
-```{r, include = FALSE}
+```{r}
 anova(mod0, mod1, test = "Chi")
 ##do not reject the null hypothesis that the reduced model is better(the model includes shift is less desirable), therefore we shouldn't include shift in the model
 ```
@@ -222,51 +230,6 @@ m.sw1
 
 ## The selected model with the lowest AIC contains only three variables: gender, BMI and Total_Met_Min, therefore the Total_Met_Min does have an effect on weight gain, and shift does not have a significant effect on weight gain
 ```
-
-
-```{r Linear Model, include = FALSE}
-lm = lm(lbs_gained ~ Total_Met_Min, data = dat2)
-
-summary(lm)
-```
-
-```{r First Scatterplot, message = FALSE}
-ggplot(data = dat2, aes(x = Total_Met_Min, y = lbs_gained)) + geom_point() + geom_smooth()
-```
-
-```{r Remove lbs_gained values > 45}
-i = 1
-for (obs in dat2$lbs_gained) {
-  if (obs > 45) {
-    dat2 = dat2[-i,]
-  } else {
-    i = i + 1
-  }
-}
-```
-
-```{r Remove Total_Met_Min values > 5000}
-i = 1
-for (obs in dat2$Total_Met_Min) {
-  if (obs >= 5000) {
-    dat2 = dat2[-i,]
-  } else {
-    i = i + 1
-  }
-}
-```
-
-```{r Linear Model without outliers, include = FALSE}
-lm = lm(lbs_gained ~ Total_Met_Min, data = dat2)
-
-summary(lm)
-```
-P-value got bigger
-
-```{r Second Scatterplot, message = FALSE}
-ggplot(data = dat2, aes(x = Total_Met_Min, y = lbs_gained)) + geom_point() + geom_smooth()
-```
-
 
 ## The Relationship Between Total Metabolic Minutes and Weight Gain
 
