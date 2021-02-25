@@ -19,15 +19,13 @@ library(faraway)
 
 ## Abstract
 
-The purpose of this data analysis is to determine whether and how total metabolic minutes and employee shift time affect weight gain. The data are from a survey administered to call center employees from a start time for call center workers. The survey covers a time period of eight months. We will apply different methods to limit the effect of missing data and to create statistical models to determine the effects of certain variables. We will create *insert models here, describing response variable for each* 
-
-*While there were many data points missing for weight gain and the total metabolic minutes, many of these could be found using the other metrics available. The health data was processed to provide as many viable data points as possible without compromising the integrity of the analysis. Two models were constructed: a linear model to examine the relationship between total metabolic minutes and weight gain and a logistic regression model to examine the relationship between shift time and weight gain.*
+The purpose of this data analysis is to determine whether and how total metabolic minutes and employee shift time affect weight gain. The data are from a survey administered to call center employees from a start time for call center workers. The survey covers a time period of eight months. We will apply different methods to limit the effect of missing data and to create statistical models to determine the effects of certain variables. We will create *insert models here, describing response variable for each*
 
 ## Introduction
 
-In the age of computing, more people continue to find jobs that require them to sit all day. Physical activity at the workplace is not as common as it once was, which can potentially lead to unwanted health consequences. It is important to deduce which factors related to the workplace may have a role in influencing health metrics such as weight gain. Doing so may help prevent health issues in the long-run.
+In the age of computing, more people continue to find jobs that require them to sit all day. Physical activity at the workplace is not as common as it once was, which can potentially lead to unwanted health consequences. It is important to deduce which factors related to the workplace may have a role in influencing health metrics such as weight gain. Doing so may help prevent health issues among employees in the long-run.
 
-Our goal is to detect whether factors, paritcularly total metabolic minutes and shift time, affect weight gain for employees of a call center. We will create *descriptive statistics and plots* to visualize these relationships in order to generate models that could answer these questions. The models will be *insert models and response variables*. This report details our analytical decisions and insights.
+Our goal is to detect whether factors, particularly total metabolic minutes, a measure of the intensity and duration of a person's physical activity in minutes per week, and shift time, affect weight gain for employees of a call center. We will create *descriptive statistics and plots* to visualize these relationships in order to generate models that could answer these questions. The models will be *insert models and response variables*. This report details our analytical decisions and insights.
 
 ## The Data
 
@@ -63,11 +61,11 @@ for (obs in dat1$Total_Met_Min){
 }
 ```
 
-```{r Changed Total_Met_Min to continuous variable}
+```{r Changed Total_Met_Min to continuous variable, warning = FALSE, include = FALSE}
 dat1$Total_Met_Min = as.numeric(dat1$Total_Met_Min)
 ```
 
-```{r}
+```{r, include = FALSE}
 # Replace numerical lbs_gained variable with 0 if corresponding binary weightgain variable is "No"
 dat2 <- dat1
 dat2$lbs_gained[dat2$weightgain == "No"] <- 0
@@ -106,26 +104,33 @@ We calculate and input values for beginning weight by subracting pounds gained f
 ## Exploratory Data Analysis
 
 ```{r Pairs Plots}
-pairs(dat1)
+#pairs(dat1)
 ```
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
+var.labs = list('Age'="Age", 'height'="Height", 'bweight'="Body Weight", 'BMI' = "BMI", 'Vig.ex.Time' = "Vigorous Exercise Time", 'Walk.ex.Time'="Walking Exercise Time", 'Total_Met_Min'="Total Metabolic Minutes")
+
+var_labeller <- function(variable,value){
+  return(var.labs[value])
+}
+
 dat1.try <- dat1[c(3:4, 7:12)]
 dat1.try <- melt(dat1.try)
-ggplot(data = dat1.try, aes(x = value)) + stat_density() + facet_wrap(~variable, scales = 'free')
+ggplot(data = dat1.try, aes(x = value)) + stat_density() + facet_wrap(~variable, scales = 'free', labeller = var_labeller)
 ```
 
 We see that Age and BMI are right-skewed with nonzero values, so we will do a log transformation on these variables.
+
+*why did we only transform these variables?*
 
 ```{r}
 dat1$Age <- log(dat1$Age)
 dat1$BMI <- log(dat1$BMI)
 ```
 
-
-
-
 By turning weightgain into a dummy variable and running a logistic regression, we can measure if other variables have influence on weightgain. First, we factored the two categorical variables and built a model with variables include shift, gender, Age, height and Beg_BMI and Total_Met_Min. Because the change in BMI is very minimal, we decided to use the beginning BMI as one of the regressors. The half normal plot shows that there is no obvious outliers in the model.
+
+*When weight gain is used as a binary variable, taking on the values yes or no, we can use logistic regression to measure the effect of our explanatory variables on whether an observation did or did not gain weight. For this logistic regression model, shift time, gender, age, height, beginning BMI, and total metabolic minutes are the explanatory variables.*
 
 ```{r}
 dat2$weightgain.b <- ifelse(dat2$weightgain == 'Yes', 1, 0)
@@ -148,6 +153,7 @@ mod0 <- glm(weightgain.b ~ gender + Age + height + Beg_BMI + Total_Met_Min, fami
 summary(mod1)
 summary(mod0)
 ```
+
 ```{r}
 anova(mod0, mod1, test = "Chi")
 ##do not reject the null hypothesis that the reduced model is better(the model includes shift is less desirable), therefore we shouldn't include shift in the model
