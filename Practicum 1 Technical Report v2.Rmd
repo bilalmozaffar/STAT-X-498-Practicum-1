@@ -241,7 +241,7 @@ tab2 = matrix(c(-13.85, 0.9924, -15.15, 0.9917, 0.7181, 0.3215, 0.0676, 0.2926, 
 colnames(tab2) <- c("Coefficient Estimate", "P-value")
 rownames(tab2) <- c("Gender: Female", "Gender: Male", "Age", "Height", "Beginning BMI", "Total Metabolic Minutes")
 tab2 <- as.table(round(tab2, 4), method = "kable")
-formattable(tab)
+formattable(tab2)
 ```
 
 With the new model not including shift category, beginning BMI again is the only significant predictor of the binary weight gain response.
