@@ -1,5 +1,5 @@
 ---
-title: "The Relationship Between Exercise Time and Weight Loss"
+title: "The Effect of Total Metabolic Minutes and Start Shift Time on Binary and Numerical Weight Gain"
 author: "Bilal Mozaffar, Risheng Li, Thomas Janes"
 date: "2/6/2021"
 output:
