@@ -15,19 +15,20 @@ library(ggplot2)
 library(dplyr)
 library(reshape2)
 library(faraway)
+library(kableExtra)
 ```
 
-## Abstract
+# Abstract
 
 The purpose of this data analysis is to determine whether and how total metabolic minutes and employee shift time affect weight gain. The data are from a survey administered to call center employees from a start time for call center workers. The survey covers a time period of eight months. We will apply different methods to limit the effect of missing data and to create statistical models to determine the effects of certain variables. We will create *insert models here, describing response variable for each*
 
-## Introduction
+# Introduction
 
 In the age of computing, more people continue to find jobs that require them to sit all day. Physical activity at the workplace is not as common as it once was, which can potentially lead to unwanted health consequences. It is important to deduce which factors related to the workplace may have a role in influencing health metrics such as weight gain. Doing so may help prevent health issues among employees in the long-run.
 
 Our goal is to detect whether factors, particularly total metabolic minutes, a measure of the intensity and duration of a person's physical activity in minutes per week, and shift time, affect weight gain for employees of a call center. We will create *descriptive statistics and plots* to visualize these relationships in order to generate models that could answer these questions. The models will be *insert models and response variables*. This report details our analytical decisions and insights.
 
-## The Data
+# The Data
 
 ```{r Read Data, include = FALSE}
 # Read data and rename certain variables
@@ -103,7 +104,7 @@ We calculate and input values for beginning weight by subracting pounds gained f
 
 $Beginning\:BMI\:=\:730\:*(Beginning\:Weight\:/\:(\:Height\:^2))$
 
-## Exploratory Data Analysis
+# Exploratory Data Analysis
 
 In order to see whether certain covariates are correlated, We create pairs plots to observe basic trends. We look at continuous numerical variables, because their trends are more meaningful than factor variables. We also look at the shift variable, because it is numerically ranked and is very relevant to this study's primary purpose.
 
@@ -170,45 +171,53 @@ To analyze potential effects of shift and total metabolic minutes simultaneously
 
 ```{r, warning = FALSE}
 ggplot(dat2, aes(x = Total_Met_Min, y = lbs_gained, color = shift.categ)) +
-  geom_point()
+  geom_point(alpha = 0.5)
 ```
 
 The response variable, pounds appears to be evenly scattered among all values of the independent variable, total metabolic minutes. This, like the earlier pairs plots, suggests that total metabolic minutes may not strongly influence pounds gained. Moreover, the different colors on the plot do not seem to follow any particular pattern or trend, suggesting, like the earlier pairs plots, that shift may not be very relevant in predicting pounds gained either.
 
 
-## Modeling
+# Modeling
 
-By turning weight gain into a dummy variable and running a logistic regression, we can measure if other variables have influence on weightgain. First, we factored the two categorical variables and built a model with variables include shift, gender, Age, height and Beg_BMI and Total_Met_Min. Because the change in BMI is very minimal, we decided to use the beginning BMI as one of the regressors. The half normal plot shows that there is no obvious outliers in the model.
+We want to create two different models. One model will be a binary logistic regression model, which will have a Yes/No response variable of weight gain. The second model will be a simple linear regression model, with the numerical pounds gained variable as the response. There are benefits and drawbacks to each model. The generalized linear model (GLM) will have more realistic interpretations for observations that had missing numerical pounds gained values, whiole the simple linear regression model will be better at quantifying the effects of certain covariates.
 
-*When weight gain is used as a binary variable, taking on the values yes or no, we can use logistic regression to measure the effect of our explanatory variables on whether an observation did or did not gain weight. For this logistic regression model, shift time, gender, age, height, beginning BMI, and total metabolic minutes are the explanatory variables.*
+## Model 1: Generalized Linear Model (GLM)
+
+By turning weight gain into a dummy variable and performing a logistic regression, we can see whether other variables have influence on weight gain. First, we factor the two categorical variables and build a model with variables including shift category, gender, age, height, and beginning BMI and total metabolic minutes. Because the change in BMI is very minimal for the vast majority of observations, we decide to use the beginning BMI as one of the regressors.
 
 ```{r}
 dat2$weightgain.b <- ifelse(dat2$weightgain == 'Yes', 1, 0)
 
 dat2$gender <- factor(dat2$gender)
-dat2$shift <- factor(dat2$shift)
+dat2$shift.categ <- factor(dat2$shift.categ)
 
 
-mod1 <- glm(weightgain.b ~ shift.categ + gender + Age + height + Beg_BMI + Total_Met_Min, family = binomial,na.omit(dat2))
+mod1 <- glm(weightgain.b ~ shift.categ + gender + Age + height + Beg_BMI + Total_Met_Min, family = binomial, na.omit(dat2))
 
 ##Outliers: no obvious outliers
 halfnorm(residuals(mod1))
 ```
 
-Solely from the model, we can see that only three variables have significant impact on the predictor: gender, Beg_BMI and Total_Met_Min. We perform a Chi-sqaure test to test if the model contains shift is better than the model without shifts. The null hypothesis is that the model without shift is a better model, and the alternative hypothesis is that the model without shift is not a better model. In order to compare two models, we omit the NA values in the dataset to make sure the number of cases used in each model is the same. The test statistic is is very large given a 95% confidence interval, therefore we fail to reject the null hypothesis that the reduced model is better, which means that the model contains shift is less favorable than the reduced model. 
+The half normal plot shows that there are no obvious outliers in the model.
+
+*When weight gain is used as a binary variable, taking on the values yes or no, we can use logistic regression to measure the effect of our explanatory variables on whether an observation did or did not gain weight. For this logistic regression model, shift time, gender, age, height, beginning BMI, and total metabolic minutes are the explanatory variables.*
 
 ```{r}
-mod0 <- glm(weightgain.b ~ gender + Age + height + Beg_BMI + Total_Met_Min, family = binomial,na.omit(dat2))
+mod0 <- glm(weightgain.b ~ gender + Age + height + Beg_BMI + Total_Met_Min, family = binomial, na.omit(dat2))
 
 #summary(mod1)
 #summary(mod0)
 
-tab = matrix(c(-.6210, 0.2796, -.3274, 0.5895, -1.087, 0.824, 1.610, 0.2903, .7895, 0.6010, -.06695, 0.0205, -.0001480, 0.0890), ncol = 2, byrow = TRUE)
+tab = matrix(c(-.6210, 0.2796, -0.3274, 0.5895, -1.087, 0.824, 1.610, 0.2903, 0.7895, 0.6010, -0.06695, 0.0205, -0.0001480,
+               0.0890), ncol = 2, byrow = TRUE)
 colnames(tab) <- c("Coefficient Estimate", "P-value")
 rownames(tab) <- c("Shift time: Early Morning", "Shift time: Late morning", "Shift time: Afternoon", "Gender: Female", "Gender: Male","Beginning BMI", "Total Metabolic Minutes")
-tab <- as.table(round(tab, 4))
+tab <- as.table(round(tab, 4), method = "kable")
 tab
+kable(tab)
 ```
+
+Solely from the model, we can see that only three variables have significant impact on the predictor: gender, Beg_BMI and Total_Met_Min. We perform a Chi-sqaure test to test if the model contains shift is better than the model without shifts. The null hypothesis is that the model without shift is a better model, and the alternative hypothesis is that the model without shift is not a better model. In order to compare two models, we omit the NA values in the dataset to make sure the number of cases used in each model is the same. The test statistic is is very large given a 95% confidence interval, therefore we fail to reject the null hypothesis that the reduced model is better, which means that the model contains shift is less favorable than the reduced model.
 
 ```{r}
 anova(mod0, mod1, test = "Chi")
@@ -239,7 +248,7 @@ Using various methods of analysis, we found that total metabolic minutes is a si
 
 It does not appear that shift has significant impact on weight gain. From the Chi-square test, we found that the model without shift performs better than the model with shift. As mentioned, we failed to reject the null hypothesis that the reduced model is better, so we do not find it beneficial to include shift in our final model to predict weight gain.
 
-## Conclusion
+# Discussion and Conclusion
 
 ascertain
 
