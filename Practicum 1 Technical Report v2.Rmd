@@ -115,7 +115,7 @@ $Beginning\:BMI\:=\:730\:*(Beginning\:Weight\:/\:(\:Height\:^2))$
 In order to see whether certain covariates are correlated, We create pairs plots to observe basic trends. We look at continuous numerical variables, because their trends are more meaningful than factor variables. We also look at the shift variable, because it is numerically ranked and is very relevant to this study's primary purpose.
 
 ```{r Pairs Plots}
-pairs(dat2[c(1, 3:4, 6:8, 12)])
+pairs(dat2[c(3:4, 6:8, 12)])
 ```
 
 As expected, body weight and BMI have a strict positive correlation, as BMI is linearly dependent upon body weight. Height also has a positive relationship with lbs_gained, as intuitively expected. Besides these and other expected relationships, there are not many easily discernible correlations. Specifically, neither shift nor total metabolic minutes has an evident relationship with pounds gained.
@@ -177,7 +177,8 @@ To analyze potential effects of shift and total metabolic minutes simultaneously
 
 ```{r, warning = FALSE}
 ggplot(dat2, aes(x = Total_Met_Min, y = lbs_gained, color = shift.categ)) +
-  geom_point(alpha = 0.5)
+  geom_point(alpha = 0.5) + 
+  xlim(0,5000)
 ```
 
 The response variable, pounds appears to be evenly scattered among all values of the independent variable, total metabolic minutes. This, like the earlier pairs plots, suggests that total metabolic minutes may not strongly influence pounds gained. Moreover, the different colors on the plot do not seem to follow any particular pattern or trend, suggesting, like the earlier pairs plots, that shift may not be very relevant in predicting pounds gained either.
