@@ -240,72 +240,72 @@ beginning BMI and total metabolic minutes. Because the change in BMI is
 very minimal for the vast majority of observations, we decide to use the
 beginning BMI as one of the regressors.
 
+We create two GLMs, one that includes shift category as a predictor and
+one that omits shift category. We will then perform a Chi-squared test
+to see which of the two models is preferred.
+
 \includegraphics{Practicum-1-Technical-Report-v2_files/figure-latex/unnamed-chunk-6-1.pdf}
 
-The half normal plot shows that there are no obvious outliers in the
-model.
+The half normal plot for the GLM that includes shift category shows that
+there are no obvious outliers in the model.
 
-\emph{When weight gain is used as a binary variable, taking on the
-values yes or no, we can use logistic regression to measure the effect
-of our explanatory variables on whether an observation did or did not
-gain weight. For this logistic regression model, shift time, gender,
-age, height, beginning BMI, and total metabolic minutes are the
-explanatory variables.}
+We now look at the significance of variables in this model.
 
 \begin{verbatim}
 ##                           Coefficient Estimate P-value
-## Shift time: Early Morning              -0.6210  0.2796
-## Shift time: Late morning               -0.3274  0.5895
-## Shift time: Afternoon                  -1.0870  0.8240
-## Gender: Female                          1.6100  0.2903
-## Gender: Male                            0.7895  0.6010
-## Beginning BMI                          -0.0670  0.0205
-## Total Metabolic Minutes                -0.0001  0.0890
+## Shift time: Early Morning -0.7879               0.2947
+## Shift time: Late morning  -0.3766               0.6314
+## Shift time: Afternoon     -1.0870               0.8240
+## Gender: Female             1.6100               0.2903
+## Gender: Male               0.7895               0.6010
+## Beginning BMI             -0.0670               0.0205
+## Total Metabolic Minutes   -0.0001               0.0890
 \end{verbatim}
 
-\begin{tabular}{l|r|r}
-\hline
-  & Coefficient Estimate & P-value\\
-\hline
-Shift time: Early Morning & -0.6210 & 0.2796\\
-\hline
-Shift time: Late morning & -0.3274 & 0.5895\\
-\hline
-Shift time: Afternoon & -1.0870 & 0.8240\\
-\hline
-Gender: Female & 1.6100 & 0.2903\\
-\hline
-Gender: Male & 0.7895 & 0.6010\\
-\hline
-Beginning BMI & -0.0670 & 0.0205\\
-\hline
-Total Metabolic Minutes & -0.0001 & 0.0890\\
-\hline
-\end{tabular}
+In the model that includes shift category as a predictor of the binary
+weight gain response, only beginning BMI appears to be significantly
+indicative using a confidence level of 95\%. None of the shift
+categories seem to influence weight gain.
 
-Solely from the model, we can see that only three variables have
-significant impact on the predictor: gender, Beg\_BMI and
-Total\_Met\_Min. We perform a Chi-sqaure test to test if the model
-contains shift is better than the model without shifts. The null
-hypothesis is that the model without shift is a better model, and the
-alternative hypothesis is that the model without shift is not a better
-model. In order to compare two models, we omit the NA values in the
-dataset to make sure the number of cases used in each model is the same.
-The test statistic is is very large given a 95\% confidence interval,
-therefore we fail to reject the null hypothesis that the reduced model
-is better, which means that the model contains shift is less favorable
-than the reduced model.
+We now look at the significance of variables in a new GLM that does
+\emph{not} include shift category.
 
 \begin{verbatim}
-## Analysis of Deviance Table
-## 
-## Model 1: weightgain.b ~ gender + Age + height + Beg_BMI + Total_Met_Min
-## Model 2: weightgain.b ~ shift.categ + gender + Age + height + Beg_BMI + 
-##     Total_Met_Min
-##   Resid. Df Resid. Dev Df Deviance Pr(>Chi)
-## 1       147     159.65                     
-## 2       144     157.94  3   1.7088    0.635
+##                           Coefficient Estimate P-value
+## Shift time: Early Morning -0.7879               0.2947
+## Shift time: Late morning  -0.3766               0.6314
+## Shift time: Afternoon     -1.0870               0.8240
+## Gender: Female             1.6100               0.2903
+## Gender: Male               0.7895               0.6010
+## Beginning BMI             -0.0670               0.0205
+## Total Metabolic Minutes   -0.0001               0.0890
 \end{verbatim}
+
+With the new model not including shift category, beginning BMI again is
+the only significant predictor of the binary weight gain response.
+
+We perform a Chi-sqaure test to test whether the model that contains
+shift category is preferred over the model without shift category. The
+null hypothesis is that the reduced model, i.e.: the model without shift
+category, is a superior model, and the alternative hypothesis is that
+the model without shift category is not a weaker model. In order to
+compare two models, we omit the NA values in the dataset to make sure
+the number of cases used in each model is the same.
+
+\begin{verbatim}
+##          P-Value
+## Chi-test 0.635
+\end{verbatim}
+
+We get a P-value of 0.635, which is very large given a confidence level
+of 95\%. Therefore, we fail to reject the null hypothesis that the
+reduced model is superior. In other words, there is not enough evidence
+to favor the model that includes shift category. It is evident that
+shift is not significantly indicative of weight gain.
+
+\hypertarget{model-2-simple-linear-regression-slr}{%
+\subsection{Model 2: Simple Linear Regression
+(SLR)}\label{model-2-simple-linear-regression-slr}}
 
 Since the initial model shows that Total\_Met\_Min is a significant
 variable, we performed another analysis, using a forward stepwise
