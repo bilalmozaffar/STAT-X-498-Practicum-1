@@ -2,7 +2,10 @@
 title: "The Relationship Between Exercise Time and Weight Loss"
 author: "Bilal Mozaffar, Risheng Li, Thomas Janes"
 date: "2/6/2021"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -16,6 +19,7 @@ library(dplyr)
 library(reshape2)
 library(faraway)
 library(tidyr)
+library(kableExtra)
 ```
 
 # Abstract
@@ -212,9 +216,9 @@ tab = matrix(c(-.6210, 0.2796, -0.3274, 0.5895, -1.087, 0.824, 1.610, 0.2903, 0.
                0.0890), ncol = 2, byrow = TRUE)
 colnames(tab) <- c("Coefficient Estimate", "P-value")
 rownames(tab) <- c("Shift time: Early Morning", "Shift time: Late morning", "Shift time: Afternoon", "Gender: Female", "Gender: Male","Beginning BMI", "Total Metabolic Minutes")
-# tab <- as.table(round(tab, 4), method = "kable")
-# tab
-# kable(tab)
+tab <- as.table(round(tab, 4), method = "kable")
+tab
+kable(tab)
 ```
 
 Solely from the model, we can see that only three variables have significant impact on the predictor: gender, Beg_BMI and Total_Met_Min. We perform a Chi-sqaure test to test if the model contains shift is better than the model without shifts. The null hypothesis is that the model without shift is a better model, and the alternative hypothesis is that the model without shift is not a better model. In order to compare two models, we omit the NA values in the dataset to make sure the number of cases used in each model is the same. The test statistic is is very large given a 95% confidence interval, therefore we fail to reject the null hypothesis that the reduced model is better, which means that the model contains shift is less favorable than the reduced model.

@@ -84,6 +84,20 @@
   \postdate{\par}
     \date{2/6/2021}
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 
 \begin{document}
 \maketitle
@@ -237,6 +251,37 @@ of our explanatory variables on whether an observation did or did not
 gain weight. For this logistic regression model, shift time, gender,
 age, height, beginning BMI, and total metabolic minutes are the
 explanatory variables.}
+
+\begin{verbatim}
+##                           Coefficient Estimate P-value
+## Shift time: Early Morning              -0.6210  0.2796
+## Shift time: Late morning               -0.3274  0.5895
+## Shift time: Afternoon                  -1.0870  0.8240
+## Gender: Female                          1.6100  0.2903
+## Gender: Male                            0.7895  0.6010
+## Beginning BMI                          -0.0670  0.0205
+## Total Metabolic Minutes                -0.0001  0.0890
+\end{verbatim}
+
+\begin{tabular}{l|r|r}
+\hline
+  & Coefficient Estimate & P-value\\
+\hline
+Shift time: Early Morning & -0.6210 & 0.2796\\
+\hline
+Shift time: Late morning & -0.3274 & 0.5895\\
+\hline
+Shift time: Afternoon & -1.0870 & 0.8240\\
+\hline
+Gender: Female & 1.6100 & 0.2903\\
+\hline
+Gender: Male & 0.7895 & 0.6010\\
+\hline
+Beginning BMI & -0.0670 & 0.0205\\
+\hline
+Total Metabolic Minutes & -0.0001 & 0.0890\\
+\hline
+\end{tabular}
 
 Solely from the model, we can see that only three variables have
 significant impact on the predictor: gender, Beg\_BMI and
